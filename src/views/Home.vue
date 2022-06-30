@@ -9,13 +9,17 @@
         <div class="left-center-echarts">
           <echarts-bar-distribute-run></echarts-bar-distribute-run>
         </div>
-        <div class="left-bottom-echarts"></div>
+        <div class="left-bottom-echarts">
+          <EchartsBarSBD></EchartsBarSBD>
+        </div>
       </div>
       <div id="center-echarts">
         <div class="echarts-map">
-          <Map></Map>
+          <Map :msg="[0,1,2,3]"></Map>
         </div>
-        <div class="center-bottom-echarts"></div>
+        <div class="center-bottom-echarts">
+          <EchartslineBA></EchartslineBA>
+        </div>
       </div>
       <div id="right-echarts">
         <div class="right-top-echarts"></div>
@@ -30,11 +34,17 @@
 import Map from "@/components/echarts-map.vue";
 import RuntimeEcharts from "@/components/echarts-pie-runtime.vue"
 import EchartsBarDistributeRun from "@/components/echarts-bar/echarts-bar-distribute-run.vue"
+// 停止/故障设备分布
+import EchartsBarSBD from "@/components/echarts-bar/echarts-bar-stop-breakdown-distribute.vue"
+import EchartslineBA from "@/components/echarts-line/echarts-line-BOD-analyse.vue"
+
 export default {
   components: {
     Map,
     RuntimeEcharts,
-    EchartsBarDistributeRun
+    EchartsBarDistributeRun,
+    EchartsBarSBD,
+    EchartslineBA
   },
 };
 </script>
@@ -43,18 +53,23 @@ export default {
 .home-body {
   width: 100vw;
   height: 100vh;
+  min-width: 1800px;
+  min-height: 900px;
   background-image: url(../assets/image/home/bodyBg.png);
   background-size: 100% 100%;
 }
 .title-box{
   height: 10vh;
+  min-height: 90px;
 }
 #all-echarts {
   display: flex;
   justify-content: space-between;
   height: 90vh;
+  height: 90%;
   #left-echarts {
     width: 25vw;
+    width: 25%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -81,6 +96,7 @@ export default {
   }
   #center-echarts {
     width: 49vw;
+    width: 49%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -100,6 +116,7 @@ export default {
   }
   #right-echarts {
     width: 25vw;
+    width: 25%;
     height: 100%;
     display: flex;
     flex-direction: column;

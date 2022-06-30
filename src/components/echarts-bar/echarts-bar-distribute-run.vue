@@ -1,24 +1,59 @@
 <template>
   <div class="distribute-run-box">
-    <div id="distribute-echarts"></div>
-    <div id="run-data-echarts"></div>
+    <div class="tab-shift-block">
+      <span
+        class="distribute-run-btn"
+        :class="selectedIndex == 1 ? 'selected' : ''"
+        @click="
+          () => {
+            shiftEvent(1);
+          }
+        "
+        >设备分布</span
+      >
+      <span
+        class="distribute-run-btn"
+        :class="selectedIndex == 2 ? 'selected' : ''"
+        @click="
+          () => {
+            shiftEvent(2);
+          }
+        "
+        >设备运行数据</span
+      >
+    </div>
+    <div class="echarts-show-box">
+      <div id="distribute-echarts" v-show="selectedIndex == 1"></div>
+      <div id="run-data-echarts" v-show="selectedIndex == 2"></div>
+    </div>
   </div>
 </template>
 
 <script>
 import * as echarts from "echarts";
+import axios from "axios";
 export default {
   data() {
-    return {};
+    return {
+      selectedIndex: 1,
+      distributeRun: null, //设备分布
+      runDataEcharts: null, //设备运行数据
+    };
   },
   mounted() {
     this.BarEquipmentDistribution();
+    this.EquipmentRunData();
   },
   methods: {
     // 设备分布 柱状图
     BarEquipmentDistribution() {
       let chartDom = document.getElementById("distribute-echarts");
       let myChart = echarts.init(chartDom);
+      this.store.state.echartsObj = {
+        ...this.store.state.echartsObj,
+        distributeRun: myChart,
+      };
+      this.distributeRun = myChart;
       let colorArr = [
         { name: "征收", color: "#2BC191", type: 1 },
         { name: "征地", color: "#FDC741", type: 2 },
@@ -49,8 +84,8 @@ export default {
         valueData.push({
           value: item.value,
           itemStyle: {
-            color: valueObj.color,
-
+            // color: valueObj.color,
+            color: "#fff",
           },
         });
         titleData.push(item.name);
@@ -63,7 +98,7 @@ export default {
 
       let option = {
         title: {
-          text: "设备分布",
+          // text: "设备分布",
           top: "2%",
           textStyle: {
             color: "#4DF3F6",
@@ -71,10 +106,10 @@ export default {
           },
         },
         tooltip: {
-          // trigger: 'axis',
-          // axisPointer: {
-          //     type: 'shadow'
-          // }
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
+          },
         },
         legend: {
           top: "2%",
@@ -89,6 +124,7 @@ export default {
           left: "3%",
           right: "10%",
           bottom: "3%",
+          top: "10%",
           containLabel: true,
         },
         yAxis: [
@@ -200,6 +236,244 @@ export default {
         console.log(params, "click-----myChart");
       });
     },
+    // 设备运行数据
+    EquipmentRunData() {
+      // return
+
+      let chartDom = document.getElementById("run-data-echarts");
+      let myChart = echarts.init(chartDom);
+      this.store.state.echartsObj = {
+        ...this.store.state.echartsObj,
+        runDataEcharts: myChart,
+      };
+      this.runDataEcharts = myChart;
+      let runData = [150, 156, 160, 170, 162, 160, 230];
+      let xData = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      let runPointData = [];
+      let coords = [];
+      for (let i = 0; i < xData.length; i++) {
+        coords.push([xData[i], runData[i]]);
+      }
+      runPointData.push({ coords });
+      let option = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
+          },
+        },
+        // 标题
+        legend: {
+          top: "2%",
+          right: "0%",
+          // left: "30%",
+          icon: "circle", //圆形
+          textStyle: {
+            // fontWeight: 'bold',
+            color: "#fff",
+            fontSize: 12,
+          },
+          data: [
+            {
+              name: "运行时间",
+              icon: "circle",
+            },
+            {
+              name: "研究次数",
+              icon: "pin",
+            },
+          ],
+        },
+        grid: {
+          left: "4%",
+          right: "4%",
+          bottom: "2%",
+          top: "18%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          axisLine: {
+            //轴线
+            show: true,
+            lineStyle: {
+              // color: "#ccc",
+              color: "#1B4E8D",
+            },
+          },
+          axisLabel: {
+            show: true,
+            rotate: 30, //倾斜的程度
+            textStyle: {
+              // fontWeight: 'bold',
+              color: "#ddd",
+              fontSize: 10,
+            },
+          },
+          data: xData,
+        },
+        yAxis: [
+          {
+            type: "value",
+            axisLine: {
+              //轴线
+              show: true,
+              lineStyle: {
+                // color: "#ccc",
+                color: "#1B4E8D",
+              },
+            },
+            splitLine: {
+              //网格线
+              show: true,
+              lineStyle: {
+                // color: '#333'
+                color: "#1B4E8D",
+              },
+            },
+            axisLabel: {
+              formatter: "{value}(H)",
+              show: true,
+              textStyle: {
+                // fontWeight: 'bold',
+                color: "#ddd",
+                fontSize: 12,
+              },
+            },
+          },
+          {
+            type: "value",
+            axisLine: {
+              //轴线
+              show: true,
+              lineStyle: {
+                // color: "#ccc",
+                color: "#1B4E8D",
+              },
+            },
+            splitLine: {
+              //网格线
+              show: true,
+              lineStyle: {
+                // color: '#333'
+                color: "#1B4E8D",
+              },
+            },
+            axisLabel: {
+              // formatter: "{value}(次)",
+              formatter(params) {
+                console.log(params, "params-----------");
+                return `${params}(次)`;
+              },
+              show: true,
+              textStyle: {
+                // fontWeight: 'bold',
+                color: "#ddd",
+                fontSize: 12,
+              },
+            },
+          },
+        ],
+        series: [
+          {
+            type: "line",
+            name: "运行时间",
+            tooltip: {
+              formatter(params) {
+                return 111;
+              },
+            },
+            smooth: 0.6, //光滑折线
+            symbol: "none", //节点 设置
+            color: "#B021EE",
+            areaStyle: {
+              // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              //   {
+              //     offset: 0,
+              //     color: "rgba(58,77,233,0.8)",
+              //   },
+              //   {
+              //     offset: 1,
+              //     color: "rgba(58,77,233,0.3)",
+              //   },
+              // ]),
+            },
+            // data: [150, 230, 224, 218, 135, 147, 230],
+            data: runData,
+          },
+          {
+            type: "lines",
+            name: "光滑点",
+            coordinateSystem: "cartesian2d",
+            symbolSize: 30,
+            color: "#B021EE",
+            polyline: true,
+            effect: {
+              show: true,
+              trailLength: 0,
+              symbol: "circle",
+              period: 10, //光点滑动速度
+              symbolSize: 15,
+              animation: false,
+              // symbol: ''
+            },
+            lineStyle: {
+              normal: {
+                width: 0,
+                opacity: 0.6,
+                curveness: 0.2,
+              },
+            },
+            data: runPointData,// 为x 和 y 轴的坐标数组
+          },
+          {
+            type: "line",
+            name: "研究次数",
+            yAxisIndex: 1,
+            tooltip: {
+              // formatter(params) {
+              //   return 111;
+              // },
+            },
+            smooth: 0.6, //光滑折线
+            symbol: "none", //节点 设置
+            color: "#33E8EB",
+            areaStyle: {
+              // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              //   {
+              //     offset: 0,
+              //     color: "rgba(58,77,233,0.8)",
+              //   },
+              //   {
+              //     offset: 1,
+              //     color: "rgba(58,77,233,0.3)",
+              //   },
+              // ]),
+            },
+            data: [239, 239, 239, 239, 239, 239, 239],
+          },
+        ],
+      };
+      myChart.setOption(option);
+      myChart.on("click", function (params) {
+        console.log(params, "click-----myChart");
+      });
+    },
+    shiftEvent(ind) {
+      this.selectedIndex = ind;
+      // 避免echarts 没完全铺满
+      setTimeout(() => {
+        if (ind == 2) {
+          this.runDataEcharts.resize();
+        } else if (ind == 1) {
+          this.distributeRun.resize();
+        }
+        console.log(ind, "setTimeout--------");
+      }, 0);
+      console.log(ind, "ind--------");
+    },
   },
 };
 </script>
@@ -208,16 +482,44 @@ export default {
 .distribute-run-box {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  #distribute-echarts {
+  // display: flex;
+  // flex-direction: column;
+  .tab-shift-block {
     width: 100%;
-    height: 50%;
-    height: 100%;
+    height: 10%;
+    margin-left: 3px;
+    .distribute-run-btn {
+      margin-right: 3px;
+      display: inline-block;
+      font-size: 16px;
+      color: #fff;
+      font-weight: bold;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+    .distribute-run-btn.selected {
+      color: #4df3f6;
+      font-size: 18px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #4df3f6;
+    }
   }
-//   #run-data-echarts {
-//     width: 100%;
-//     height: 50%;
-//   }
+
+  .echarts-show-box {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    #distribute-echarts {
+      width: 100%;
+      height: 50%;
+      height: 100%;
+    }
+    #run-data-echarts {
+      width: 100%;
+      height: 50%;
+      height: 100%;
+    }
+  }
 }
 </style>

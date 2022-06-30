@@ -35,26 +35,32 @@ import chinaData from "echarts/map/json/china.json"; //重点，从4.9版本中�
 import mapBg from "@/assets/image/home/map.png";
 // import axios from "axios";
 export default {
+  props: {
+    msg: {
+      type: Array,
+      default: null,
+    },
+  },
   data() {
     return {
       oldHtml: "",
-      // title: "Home title",
     };
   },
   mounted() {
     let that = this;
     // echarts 自适应
-    window.addEventListener('resize', function(){
+    window.addEventListener("resize", function () {
       let { echartsObj } = that.store.state;
-      for( let echartItem in  echartsObj){
+      for (let echartItem in echartsObj) {
         echartsObj[echartItem].resize();
       }
-    })
+    });
     // window.onresize = function(){
     //   for( let echartItem in  that.store.state.echartsObj){
     //     echartItem.resize();
     //   }
     // }
+    // console.log('this.props------',this.$props.msg)
     this.mapEcharts();
     // return
   },
@@ -69,7 +75,7 @@ export default {
       let { width: mapWidth, height: mapHeight } = this.getElemSize("#map");
       let widthO = 960;
       let heightO = 543;
-      console.log(mapWidth, mapHeight);
+      // console.log(mapWidth, mapHeight);
       let fontSize = 14;
       // china 城市
       let city = [
@@ -162,8 +168,11 @@ export default {
       // console.log(pointsData, "pointsData------");
       let chartDom = document.getElementById("map");
       let myChart = echarts.init(chartDom);
-      this.store.state.echartsObj = {  ...this.store.state.echartsObj ,map:myChart }
-      console.log(this.store.state.echartsObj)
+      this.store.state.echartsObj = {
+        ...this.store.state.echartsObj,
+        map: myChart,
+      };
+      // console.log(this.store.state.echartsObj)
       let option = {
         title: {
           // text: "Population Density of Hong Kong （2011）",
@@ -172,7 +181,13 @@ export default {
           //   "http://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF%E8%A1%8C%E6%94%BF%E5%8D%80%E5%8A%83#cite_note-12",
         },
         tooltip: {},
-
+        // grid: {
+        //   left: "30%",
+        //   right: "10%",
+        //   bottom: "3%",
+        //   top: "10%",
+        //   containLabel: true,
+        // },
         visualMap: {
           show: false,
           min: 0,
@@ -208,7 +223,7 @@ export default {
           {
             // name: "香港18区人口密度",
             name: "水样研究次数",
-
+            // left: "28%",
             type: "map",
             // map: "china",
             mapType: "china",
@@ -399,7 +414,7 @@ export default {
             symbolSize: [50, 50],
             tooltip: {
               formatter(params) {
-                console.log(params, "top----params");
+                // console.log(params, "top----params");
                 return "";
               },
             },
@@ -411,7 +426,7 @@ export default {
                   fontSize: 12,
                 },
                 formatter(value) {
-                  console.log(value, "params------");
+                  // console.log(value, "params------");
                   return value.data.value[2];
                 },
               },
@@ -438,7 +453,7 @@ export default {
       // myChart.showLoading();
       // myChart.hideLoading();
       echarts.registerMap("china", chinaData);
-      console.log(chinaData, "chinaData0----");
+      // console.log(chinaData, "chinaData0----");
       myChart.setOption(option);
       myChart.on("click", function (params) {
         console.log(params, "click-----myChart");
@@ -446,7 +461,7 @@ export default {
     },
   },
   unmounted() {
-    console.log("unmounted----1");
+    // console.log("unmounted----1");
   },
 };
 </script>
